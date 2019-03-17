@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using restApi.Models;
+using restApi.Persistence.DAO;
+using restApi.Persistence.DAO.Interfaces;
 
 namespace restApi
 {
@@ -20,11 +22,15 @@ namespace restApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration["ConexaoMySql:MySqlConnectionString"];
+            var connection = Configuration["ConnectionMySql:MySqlConnectionString"];
 
-            services.AddDbContext<UserContext>(options =>
+            services.AddDbContext<AppContext>(options =>
                 options.UseMySql(connection));
+                
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // dependency injection
+            services.AddScoped<IUserDAO, UserDAO>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
