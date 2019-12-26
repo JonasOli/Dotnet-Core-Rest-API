@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using restApi.Models;
 using restApi.Persistence.DAO.Interfaces;
 
@@ -12,22 +11,23 @@ namespace restApi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserDAO _userDAO;
-        public UserController(IUserDAO userDAO)
+        private readonly IUserRepository _userRepository;
+
+        public UserController(IUserRepository userRepository)
         {
-            _userDAO = userDAO;
-        }
-        
-        [HttpGet("getUsers")]
-        public async Task<IEnumerable<User>> GetUsers()
-        {
-            return await _userDAO.GetUsers();
+            _userRepository = userRepository;
         }
 
-        [HttpGet("getUser/{id}")]
+        [HttpGet]
+        public async Task<IEnumerable<User>> GetUsers()
+        {
+            return await _userRepository.GetUsers();
+        }
+
+        [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(long id)
         {
-            var user = await _userDAO.GetUser(id);
+            var user = await _userRepository.GetUser(id);
 
             if (user == null)
             {
@@ -37,17 +37,34 @@ namespace restApi.Controllers
             return user;
         }
 
-        [HttpPost("insertUser")]
+        [HttpPost]
         public async Task<ActionResult> InsertUser(User user)
         {
-            int result =  await _userDAO.InsertUser(user);
-            
-            if (result == 1)
+            try
             {
+                await _userRepository.InsertUser(user);
+
                 return Ok();
             }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
-            return BadRequest();
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(long id)
+        {
+            try
+            {
+                await _userRepository.Remove(id);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

@@ -5,10 +5,11 @@ using restApi.Models;
 
 namespace restApi.Persistence.DAO.Interfaces
 {
-    public interface IUserDAO
+    public interface IUserRepository
     {
         Task<IEnumerable<User>> GetUsers();
         Task<User> GetUser(long id);
-        Task<int> InsertUser(User user);
+        Task InsertUser(User user);
+        Task Remove(long id);
     }
 }

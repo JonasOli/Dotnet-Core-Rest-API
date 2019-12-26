@@ -30,7 +30,7 @@ namespace restApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // dependency injection
-            services.AddScoped<IUserDAO, UserDAO>();
+            services.AddTransient<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +48,7 @@ namespace restApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCors();
         }
     }
 }
